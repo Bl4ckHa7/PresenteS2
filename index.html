@@ -320,7 +320,19 @@
     enviarRespostas(); // manda pro seu e-mail em segundo plano
   }
 
-  function enviarRespostas(){
+  function status(msg, ok){
+    let el = document.getElementById('envio-status');
+    if(!el){
+      el = document.createElement('p');
+      el.id = 'envio-status';
+      el.className = 'footer';
+      document.querySelector('#s5 .done').appendChild(el);
+    }
+    el.style.color = ok ? '#9be29b' : '#ff9b9b';
+    el.textContent = msg;
+  }
+
+  async function enviarRespostas(){
     const nome = (document.getElementById('nome').value || '').trim() || 'Ela (não disse o nome 🙈)';
     const payload = {
       "_subject": "💌 Ela respondeu o convite!",
@@ -332,11 +344,27 @@
       "Vibe": answers.vibe || '—',
       "Resposta ao convite": "DISSE SIM! 💕"
     };
-    fetch("https://formsubmit.co/ajax/" + EMAIL_DESTINO, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify(payload)
-    }).catch(()=>{ /* se falhar, o print da tela continua sendo o plano B */ });
+    status('enviando…', true);
+    try {
+      const r = await fetch("https://formsubmit.co/ajax/" + EMAIL_DESTINO, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await r.json().catch(()=> ({}));
+      console.log('[FormSubmit] status', r.status, data);
+      if (r.ok && (data.success === true || data.success === "true")) {
+        status('✓ resposta enviada', true);
+      } else if (data.message) {
+        // normalmente: pedido de ativação na 1ª vez
+        status('⚠ ' + data.message, false);
+      } else {
+        status('⚠ não confirmado (HTTP ' + r.status + ') — veja o console', false);
+      }
+    } catch (e) {
+      console.error('[FormSubmit] falha no envio', e);
+      status('⚠ falha de rede ao enviar — veja o console (F12)', false);
+    }
   }
 
   // confete
