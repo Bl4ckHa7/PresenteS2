@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Um convite especial 💌</title>
+<style>
+  :root{
+    --bg1:#1a0b2e;
+    --bg2:#2d1b4e;
+    --bg3:#4a1942;
+    --pink:#ff7eb3;
+    --pink-soft:#ffb3d1;
+    --gold:#ffd86b;
+    --cream:#fff4f8;
+    --glass:rgba(255,255,255,.08);
+    --glass-border:rgba(255,255,255,.18);
+    --shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2) 50%,var(--bg3));
+    background-size:200% 200%;
+    animation:bgmove 18s ease infinite;
+    color:var(--cream);
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    overflow-x:hidden;
+    position:relative;
+    padding:20px;
+  }
+  @keyframes bgmove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+  /* corações flutuantes */
+  .hearts{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .hearts span{
+    position:absolute;bottom:-40px;
+    font-size:22px;opacity:.6;
+    animation:float linear infinite;
+  }
+  @keyframes float{
+    0%{transform:translateY(0) rotate(0);opacity:0}
+    10%{opacity:.7}
+    90%{opacity:.7}
+    100%{transform:translateY(-110vh) rotate(360deg);opacity:0}
+  }
+
+  .stage{
+    width:100%;max-width:540px;
+    background:var(--glass);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border:1px solid var(--glass-border);
+    border-radius:28px;
+    box-shadow:var(--shadow);
+    padding:38px 30px 34px;
+    position:relative;z-index:2;
+    text-align:center;
+  }
+
+  /* barra de progresso */
+  .progress{
+    height:7px;width:100%;
+    background:rgba(255,255,255,.12);
+    border-radius:99px;overflow:hidden;
+    margin-bottom:26px;
+  }
+  .progress-bar{
+    height:100%;width:0%;
+    background:linear-gradient(90deg,var(--pink),var(--gold));
+    border-radius:99px;
+    transition:width .6s cubic-bezier(.4,0,.2,1);
+  }
+
+  .screen{display:none;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+  .screen.active{display:block}
+  @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+
+  .emoji-big{font-size:64px;display:block;margin-bottom:10px;animation:wiggle 2.6s ease-in-out infinite}
+  @keyframes wiggle{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+
+  h1{font-size:30px;line-height:1.2;margin-bottom:14px;font-weight:800;
+    background:linear-gradient(90deg,var(--pink-soft),var(--gold));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  h2{font-size:23px;line-height:1.3;margin-bottom:8px;font-weight:700}
+  p.sub{color:rgba(255,255,255,.78);font-size:15px;line-height:1.55;margin-bottom:24px}
+  p.hint{color:var(--gold);font-size:13px;margin-bottom:20px;font-style:italic}
+
+  .options{display:grid;gap:12px;margin-bottom:8px}
+  .opt{
+    display:flex;align-items:center;gap:14px;
+    background:rgba(255,255,255,.06);
+    border:1.5px solid var(--glass-border);
+    border-radius:16px;
+    padding:15px 18px;
+    cursor:pointer;
+    font-size:16px;font-weight:600;color:var(--cream);
+    text-align:left;
+    transition:all .22s ease;
+  }
+  .opt .ico{font-size:26px;flex-shrink:0}
+  .opt:hover{transform:translateY(-3px);border-color:var(--pink);background:rgba(255,126,179,.16);box-shadow:0 8px 24px rgba(255,126,179,.25)}
+  .opt.selected{border-color:var(--gold);background:rgba(255,216,107,.18);transform:translateY(-2px)}
+
+  .btn{
+    display:inline-block;margin-top:22px;
+    background:linear-gradient(90deg,var(--pink),#ff5c9d);
+    color:#fff;border:none;border-radius:99px;
+    padding:15px 38px;font-size:17px;font-weight:800;
+    cursor:pointer;letter-spacing:.3px;
+    box-shadow:0 10px 30px rgba(255,92,157,.45);
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 14px 38px rgba(255,92,157,.6)}
+  .btn:active{transform:translateY(0) scale(.98)}
+  .btn.ghost{background:transparent;border:1.5px solid var(--glass-border);box-shadow:none;font-weight:600;font-size:14px;padding:10px 24px}
+
+  .namefield{
+    display:block;width:100%;margin:0 auto;
+    background:rgba(255,255,255,.07);
+    border:1.5px solid var(--glass-border);
+    border-radius:14px;color:var(--cream);
+    padding:13px 18px;font-size:16px;text-align:center;
+    outline:none;transition:border-color .2s,background .2s;
+  }
+  .namefield::placeholder{color:rgba(255,255,255,.5)}
+  .namefield:focus{border-color:var(--pink);background:rgba(255,126,179,.12)}
+
+  /* tela final */
+  .ticket{
+    background:linear-gradient(145deg,rgba(255,126,179,.18),rgba(255,216,107,.12));
+    border:1.5px dashed var(--gold);
+    border-radius:20px;
+    padding:22px;margin:20px 0 6px;text-align:left;
+  }
+  .ticket .row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,.15)}
+  .ticket .row:last-child{border-bottom:none}
+  .ticket .row .ico{font-size:24px}
+  .ticket .row .label{font-size:12px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1px}
+  .ticket .row .val{font-size:16px;font-weight:700}
+
+  /* botões sim/não brincadeira */
+  .final-actions{margin-top:18px;display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap}
+  #btnNao{
+    background:rgba(255,255,255,.08);border:1.5px solid var(--glass-border);
+    color:rgba(255,255,255,.7);border-radius:99px;padding:13px 26px;font-size:15px;font-weight:600;cursor:pointer;
+    transition:all .2s;position:relative;
+  }
+
+  .done{font-size:18px;line-height:1.6;margin-top:14px}
+  .done .big{font-size:46px;display:block;margin-bottom:8px}
+
+  .footer{margin-top:22px;font-size:12px;color:rgba(255,255,255,.45)}
+
+  /* confete */
+  .confetti{position:fixed;width:10px;height:14px;top:-20px;z-index:5;border-radius:2px;pointer-events:none}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.2}}
+
+  @media(max-width:480px){
+    .stage{padding:30px 20px 28px}
+    h1{font-size:25px}
+    .emoji-big{font-size:54px}
+  }
+</style>
+</head>
+<body>
+<div class="hearts" id="hearts"></div>
+
+<main class="stage">
+  <div class="progress"><div class="progress-bar" id="bar"></div></div>
+
+  <!-- TELA 0: BOAS-VINDAS -->
+  <section class="screen active" id="s0">
+    <span class="emoji-big">💌</span>
+    <h1>Opa... você foi escolhida</h1>
+    <p class="sub">Calma, não é golpe (juro 😅). É só uma missão super secreta de 3 perguntas pra montar o encontro <b>perfeito</b> pra você.<br><br>Bora jogar?</p>
+    <input type="text" id="nome" class="namefield" placeholder="Antes... como eu te chamo? 💕" autocomplete="off" maxlength="40">
+    <button class="btn" onclick="go(1)">Topo o desafio 💃</button>
+    <p class="footer">⏱️ Dura menos que decidir o que assistir na Netflix.</p>
+  </section>
+
+  <!-- TELA 1: LUGAR -->
+  <section class="screen" id="s1">
+    <span class="emoji-big">🗺️</span>
+    <h2>Pergunta 1 de 3</h2>
+    <p class="sub">Se eu te sequestrasse (legalmente) por umas horas, pra onde a gente ia?</p>
+    <div class="options" data-step="lugar">
+      <div class="opt" data-val="Um café aconchegante" data-ico="☕"><span class="ico">☕</span> Um café fofo e aconchegante</div>
+      <div class="opt" data-val="Um barzinho com música" data-ico="🍸"><span class="ico">🍸</span> Um barzinho com música boa</div>
+      <div class="opt" data-val="Um passeio ao ar livre" data-ico="🌅"><span class="ico">🌅</span> Ar livre, pôr do sol, essas coisas</div>
+      <div class="opt" data-val="Cinema / algo cultural" data-ico="🎬"><span class="ico">🎬</span> Cinema ou algo bem cultural</div>
+      <div class="opt" data-val="Me surpreenda" data-ico="🎲"><span class="ico">🎲</span> Surpresa — confio em você (será? 🤔)</div>
+    </div>
+  </section>
+
+  <!-- TELA 2: COMIDA -->
+  <section class="screen" id="s2">
+    <span class="emoji-big">🍝</span>
+    <h2>Pergunta 2 de 3</h2>
+    <p class="sub">Hora do que realmente importa: a comida. O que tá te chamando?</p>
+    <div class="options" data-step="comida">
+      <div class="opt" data-val="Comida italiana" data-ico="🍕"><span class="ico">🍕</span> Italiana (massa, pizza, vinho... clássico)</div>
+      <div class="opt" data-val="Japonesa / sushi" data-ico="🍣"><span class="ico">🍣</span> Japonesa — sushi pra dividir</div>
+      <div class="opt" data-val="Hambúrguer artesanal" data-ico="🍔"><span class="ico">🍔</span> Hambúrguer sem frescura</div>
+      <div class="opt" data-val="Algo doce / sobremesa" data-ico="🍰"><span class="ico">🍰</span> Pula pra sobremesa, vida é curta</div>
+      <div class="opt" data-val="Tanto faz, contanto que tenha companhia" data-ico="🥰"><span class="ico">🥰</span> Tanto faz, o que importa é a companhia</div>
+    </div>
+  </section>
+
+  <!-- TELA 3: VIBE -->
+  <section class="screen" id="s3">
+    <span class="emoji-big">✨</span>
+    <h2>Pergunta 3 de 3</h2>
+    <p class="sub">E a vibe da noite? Como você quer se sentir?</p>
+    <div class="options" data-step="vibe">
+      <div class="opt" data-val="Leve e cheia de risadas" data-ico="😂"><span class="ico">😂</span> Leve, com muita risada</div>
+      <div class="opt" data-val="Calma e aconchegante" data-ico="🕯️"><span class="ico">🕯️</span> Calma e aconchegante</div>
+      <div class="opt" data-val="Animada e cheia de energia" data-ico="🎉"><span class="ico">🎉</span> Animada, energia lá em cima</div>
+      <div class="opt" data-val="Romântica de filme" data-ico="💖"><span class="ico">💖</span> Romântica, tipo cena de filme</div>
+      <div class="opt" data-val="Profunda, de boas conversas" data-ico="🌙"><span class="ico">🌙</span> Profunda, daquelas conversas até tarde</div>
+    </div>
+  </section>
+
+  <!-- TELA FINAL: RESUMO + CONVITE -->
+  <section class="screen" id="s4">
+    <span class="emoji-big">🎟️</span>
+    <h1>Seu encontro tá pronto!</h1>
+    <p class="sub">Olha só o que a gente montou juntos:</p>
+    <div class="ticket" id="ticket">
+      <div class="row"><span class="ico" id="i-lugar">📍</span><div><div class="label">Lugar</div><div class="val" id="v-lugar">—</div></div></div>
+      <div class="row"><span class="ico" id="i-comida">🍴</span><div><div class="label">Comida</div><div class="val" id="v-comida">—</div></div></div>
+      <div class="row"><span class="ico" id="i-vibe">✨</span><div><div class="label">Vibe</div><div class="val" id="v-vibe">—</div></div></div>
+    </div>
+    <h2 style="margin-top:22px">Então... posso te chamar pra esse encontro?</h2>
+    <p class="sub" style="margin-top:6px">Sem pressão. Só dois amigos, ótima comida e a melhor companhia possível.</p>
+    <div class="final-actions">
+      <button class="btn" id="btnSim" onclick="aceitou()">SIM, claro! 💕</button>
+      <button id="btnNao">Hmm, deixa eu pensar...</button>
+    </div>
+    <p class="footer">Feito com um pouquinho de código e bastante coragem. 💛</p>
+  </section>
+
+  <!-- TELA SUCESSO -->
+  <section class="screen" id="s5">
+    <div class="done">
+      <span class="big">🥳💖</span>
+      <b>Aêêê! Encontro confirmado!</b><br>
+      <p class="sub" style="margin-top:14px">Agora é sério: me manda um print dessa tela e a gente combina dia e hora. 😏<br><br>Já tô contando os minutos. ✨</p>
+      <button class="btn ghost" onclick="restart()">↺ Jogar de novo</button>
+    </div>
+  </section>
+</main>
+
+<script>
+  const answers = {lugar:null, comida:null, comidaIco:'🍴', lugarIco:'📍', vibe:null, vibeIco:'✨'};
+  let current = 0;
+  const screens = [...document.querySelectorAll('.screen')];
+  const bar = document.getElementById('bar');
+
+  function show(n){
+    screens.forEach(s=>s.classList.remove('active'));
+    document.getElementById('s'+n).classList.add('active');
+    current = n;
+    // progresso: 0 boas-vindas, 1-3 perguntas, 4 final
+    const pct = n===0?6 : n>=4?100 : (n/4)*100;
+    bar.style.width = pct + '%';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function go(n){ show(n); }
+
+  // seleção de opções
+  document.querySelectorAll('.options').forEach(group=>{
+    const step = group.dataset.step;
+    group.querySelectorAll('.opt').forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        group.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+        opt.classList.add('selected');
+        answers[step] = opt.dataset.val;
+        answers[step+'Ico'] = opt.dataset.ico;
+        // avança automático após pequena pausa
+        setTimeout(()=>{
+          if(step==='lugar') go(2);
+          else if(step==='comida') go(3);
+          else if(step==='vibe'){ fillTicket(); go(4); }
+        }, 380);
+      });
+    });
+  });
+
+  function fillTicket(){
+    document.getElementById('v-lugar').textContent = answers.lugar;
+    document.getElementById('v-comida').textContent = answers.comida;
+    document.getElementById('v-vibe').textContent = answers.vibe;
+    document.getElementById('i-lugar').textContent = answers.lugarIco;
+    document.getElementById('i-comida').textContent = answers.comidaIco;
+    document.getElementById('i-vibe').textContent = answers.vibeIco;
+  }
+
+  // botão "não" fujão e brincalhão
+  const btnNao = document.getElementById('btnNao');
+  const frases = ['Tem certeza? 👀','Pensa de novo 😅','Vai perder essa comida?','Eu pago a sobremesa 🍰','Última chance 🙈','Sério mesmo? 🥺'];
+  let fi = 0;
+  btnNao.addEventListener('mouseenter', dodge);
+  btnNao.addEventListener('click', e=>{ e.preventDefault(); dodge(); });
+  function dodge(){
+    btnNao.textContent = frases[fi % frases.length]; fi++;
+    const dx = (Math.random()*160-80);
+    const dy = (Math.random()*60-30);
+    btnNao.style.transform = `translate(${dx}px,${dy}px) rotate(${dx/8}deg)`;
+    btnNao.style.transition='transform .25s ease';
+  }
+
+  // >>> SEU E-MAIL aqui (é pra cá que as respostas chegam) <<<
+  const EMAIL_DESTINO = "felipepessoa404@gmail.com";
+
+  function aceitou(){
+    show(5); blast();
+    enviarRespostas(); // manda pro seu e-mail em segundo plano
+  }
+
+  function enviarRespostas(){
+    const nome = (document.getElementById('nome').value || '').trim() || 'Ela (não disse o nome 🙈)';
+    const payload = {
+      "_subject": "💌 Ela respondeu o convite!",
+      "_template": "table",
+      "_captcha": "false",
+      "Quem respondeu": nome,
+      "Lugar": answers.lugar || '—',
+      "Comida": answers.comida || '—',
+      "Vibe": answers.vibe || '—',
+      "Resposta ao convite": "DISSE SIM! 💕"
+    };
+    fetch("https://formsubmit.co/ajax/" + EMAIL_DESTINO, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify(payload)
+    }).catch(()=>{ /* se falhar, o print da tela continua sendo o plano B */ });
+  }
+
+  // confete
+  function blast(){
+    const cores=['#ff7eb3','#ffd86b','#ff5c9d','#ffb3d1','#fff4f8','#a78bfa'];
+    for(let i=0;i<120;i++){
+      const c=document.createElement('div');
+      c.className='confetti';
+      c.style.left=Math.random()*100+'vw';
+      c.style.background=cores[Math.floor(Math.random()*cores.length)];
+      c.style.animation=`fall ${2+Math.random()*2.5}s linear ${Math.random()*0.6}s forwards`;
+      c.style.opacity=1;
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),5200);
+    }
+  }
+
+  function restart(){
+    Object.keys(answers).forEach(k=>{ if(!k.endsWith('Ico')) answers[k]=null; });
+    document.querySelectorAll('.opt').forEach(o=>o.classList.remove('selected'));
+    btnNao.style.transform='none'; btnNao.textContent='Hmm, deixa eu pensar...'; fi=0;
+    show(0);
+  }
+
+  // corações de fundo
+  const hc = document.getElementById('hearts');
+  const emojis=['💖','💗','💕','✨','💛','🌸'];
+  for(let i=0;i<16;i++){
+    const s=document.createElement('span');
+    s.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left=Math.random()*100+'vw';
+    s.style.fontSize=(16+Math.random()*22)+'px';
+    s.style.animationDuration=(9+Math.random()*12)+'s';
+    s.style.animationDelay=(Math.random()*10)+'s';
+    hc.appendChild(s);
+  }
+</script>
+</body>
+</html>
